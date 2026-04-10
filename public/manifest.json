@@ -1,0 +1,22 @@
+{
+  "name": "NS Reset",
+  "short_name": "NS Reset",
+  "description": "Nervous System Reset — regulation toolkit",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#211E19",
+  "theme_color": "#211E19",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
