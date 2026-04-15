@@ -217,7 +217,7 @@ export default function App() {
   const saveBuilder=useCallback(v=>{setBEntries(v);store.set("ns4-builder",v);},[]);
   const saveHealth=useCallback(v=>{setHealthLog(v);store.set("ns4-health",v);},[]);
 
-  const addEntry=useCallback((state,note,toolName)=>{const en={id:Date.now(),state,tool:toolName||null,note,time:new Date().toISOString()};const u=[en,...entries].slice(0,500);saveEntries(u);},[entries,saveEntries]);
+  const addEntry=useCallback((state:string,note:string,toolName?:string)=>{const en={id:Date.now(),state,tool:toolName||null,note,time:new Date().toISOString()};const u=[en,...entries].slice(0,500);saveEntries(u);},[entries,saveEntries]);
   const addEvEntry=useCallback((biz,text,cat)=>{const en={id:Date.now(),business:biz,text,category:cat,time:new Date().toISOString()};const u=[en,...evidence].slice(0,200);saveEvidence(u);},[evidence,saveEvidence]);
   const addBEntry=useCallback((pattern,biz,action)=>{const en={id:Date.now(),pattern,business:biz,action,time:new Date().toISOString()};const u=[en,...bEntries].slice(0,500);saveBuilder(u);},[bEntries,saveBuilder]);
   const addHealthLog=useCallback((state,energy,sleep,anxiety)=>{const en={id:Date.now(),state,energy,sleep,anxiety,time:new Date().toISOString()};const u=[en,...healthLog].slice(0,500);saveHealth(u);},[healthLog,saveHealth]);
@@ -230,7 +230,7 @@ export default function App() {
   };
   const importData=(e)=>{
     const file=e.target.files?.[0];if(!file)return;
-    const reader=new FileReader();reader.onload=async(ev)=>{try{const d=JSON.parse(ev.target.result);
+    const reader=new FileReader();reader.onload=async(ev)=>{try{const d=JSON.parse(ev.target?.result as string);
       if(d.entries){await saveEntries(d.entries);}if(d.evidence){await saveEvidence(d.evidence);}if(d.bEntries){await saveBuilder(d.bEntries);}if(d.healthLog){await saveHealth(d.healthLog);}
       alert("Data restored!");
     }catch{alert("Invalid backup file.");}};reader.readAsText(file);
@@ -242,7 +242,7 @@ export default function App() {
   const box={minHeight:"100vh",background:"linear-gradient(180deg,#211E19 0%,#1A1816 40%,#141210 100%)",color:"#E8DFD1",fontFamily:F,maxWidth:"100%",overflow:"hidden"};
   const hdr={padding:"44px 24px 16px",borderBottom:"1px solid rgba(201,169,110,0.08)"};
   const pad="24px"; // consistent horizontal padding
-  const bk=(to,extra)=>(<button onClick={()=>{setScr(to);if(to==="checkin"){setSel(null);setTool(null);setDone(false);setBreathOn(false);setTab("tools");setPat(null);setBTab("truth");}if(to==="tools"){setTool(null);setDone(false);setBreathOn(false);}if(to==="builder"){setPat(null);setBTab("truth");setBDone(new Set());}if(extra)extra();}} style={{background:"none",border:"none",color:"#C9A96E80",fontFamily:F,fontSize:13,cursor:"pointer",padding:0,letterSpacing:"0.1em"}}>← BACK</button>);
+  const bk=(to:string,extra?:()=>void)=>(<button onClick={()=>{setScr(to);if(to==="checkin"){setSel(null);setTool(null);setDone(false);setBreathOn(false);setTab("tools");setPat(null);setBTab("truth");}if(to==="tools"){setTool(null);setDone(false);setBreathOn(false);}if(to==="builder"){setPat(null);setBTab("truth");setBDone(new Set());}if(extra)extra();}} style={{background:"none",border:"none",color:"#C9A96E80",fontFamily:F,fontSize:13,cursor:"pointer",padding:0,letterSpacing:"0.1em"}}>← BACK</button>);
 
   const stateBtn=(k,s)=>(<button key={k} onClick={()=>{setSel(k);setScr("tools");setTab("tools");}} style={{display:"block",width:"100%",background:s.bg,border:`1px solid ${s.bdr}`,borderRadius:12,padding:"18px 24px",marginBottom:8,cursor:"pointer",textAlign:"left"}}>
     <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:3}}><span style={{fontSize:16,color:s.col,opacity:.85}}>{s.sym}</span><span style={{fontFamily:F,fontSize:17,color:s.col,letterSpacing:"0.04em"}}>{s.label}</span></div>
@@ -494,7 +494,7 @@ export default function App() {
       <div style={hdr}>{bk("checkin")}<h2 style={{fontSize:24,fontWeight:300,margin:"14px 0 0",color:"#C9A96E"}}>Pattern Log</h2></div>
       {entries.length>0&&(<div style={{padding:"24px 18px 0"}}>
         <div style={{display:"flex",gap:2,height:28,borderRadius:6,overflow:"hidden",marginBottom:14}}>
-          {Object.entries(cts).map(([st,c])=>{const s=STATES[st];if(!s)return null;return(<div key={st} style={{flex:c,background:s.col,opacity:.45,display:"flex",alignItems:"center",justifyContent:"center"}}>{c/tot>.12&&<span style={{fontSize:7,fontFamily:M,color:"#211E19",fontWeight:700,letterSpacing:"0.06em"}}>{s.label.slice(0,5).toUpperCase()}</span>}</div>);})}
+          {Object.entries(cts).map(([st,c])=>{const s=STATES[st];const count=c as number;if(!s)return null;return(<div key={st} style={{flex:count,background:s.col,opacity:.45,display:"flex",alignItems:"center",justifyContent:"center"}}>{count/tot>.12&&<span style={{fontSize:7,fontFamily:M,color:"#211E19",fontWeight:700,letterSpacing:"0.06em"}}>{s.label.slice(0,5).toUpperCase()}</span>}</div>);})}
         </div>
         <div style={{display:"flex",gap:8,marginBottom:16}}>
           {[{n:shifts,l:"SHIFTS",c:"#C9A96E"},{n:entries.length,l:"TOTAL",c:"#E8DFD168"}].map(x=>(<div key={x.l} style={{flex:1,borderRadius:8,padding:10,textAlign:"center",background:"rgba(232,223,209,0.07)"}}><div style={{fontFamily:M,fontSize:18,color:x.c}}>{x.n}</div><div style={{fontFamily:M,fontSize:7,color:"#E8DFD178",letterSpacing:"0.15em"}}>{x.l}</div></div>))}
